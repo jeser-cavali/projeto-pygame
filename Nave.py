@@ -4,6 +4,13 @@ from ElementoJogo import ElementoJogo
 class Nave(ElementoJogo):
     def __init__(self, largura_tela, altura_tela, velocidade=6, cor=(0, 255, 100)):
         # Inicializa a classe base com posição inicial centralizada embaixo
+        pygame.sprite.Sprite.__init__(self)
+        self.sprites = [
+            pygame.transform.scale(pygame.image.load('media/Ship-middle.png'), (50, 50)),
+            pygame.transform.scale(pygame.image.load('media/Ship-left.png'), (50, 50)),
+            pygame.transform.scale(pygame.image.load('media/Ship-right.png'), (50, 50)),
+        ]
+        self.current_sprite = 0
         super().__init__(
             x=largura_tela // 2 - 20,
             y=altura_tela - 60,
@@ -21,16 +28,20 @@ class Nave(ElementoJogo):
         """Controla os eventos de teclado para movimentação e disparo."""
         if evento.type == pygame.KEYDOWN:
             if evento.key in (pygame.K_LEFT, pygame.K_a):
+                self.current_sprite = 1
                 self.vel_x = -self.velocidade
             elif evento.key in (pygame.K_RIGHT, pygame.K_d):
+                self.current_sprite = 2
                 self.vel_x = self.velocidade
             elif evento.key == pygame.K_SPACE:
                 self.atirar()
 
         elif evento.type == pygame.KEYUP:
             if evento.key in (pygame.K_LEFT, pygame.K_a) and self.vel_x < 0:
+                self.current_sprite = 0
                 self.vel_x = 0
             elif evento.key in (pygame.K_RIGHT, pygame.K_d) and self.vel_x > 0:
+                self.current_sprite = 0
                 self.vel_x = 0
 
     def mover(self):
@@ -63,12 +74,7 @@ class Nave(ElementoJogo):
 
     def desenhar(self, tela):
         # Polimorfismo: desenha a nave em formato de triângulo
-        pontos = [
-            (self.rect.centerx, self.rect.top),
-            (self.rect.left, self.rect.bottom),
-            (self.rect.right, self.rect.bottom)
-        ]
-        pygame.draw.polygon(tela, self.cor, pontos)
+        tela.blit(self.sprites[self.current_sprite], (self.rect.x, self.rect.y))
 
         # Desenha os tiros ativos na cor branca
         for tiro in self.tiros:
