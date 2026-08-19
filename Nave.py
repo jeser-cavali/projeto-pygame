@@ -1,10 +1,13 @@
 import pygame
+
+import Projetil
 from ElementoJogo import ElementoJogo
 
 class Nave(ElementoJogo):
     def __init__(self, largura_tela, altura_tela, velocidade=6, cor=(0, 255, 100)):
         # Inicializa a classe base com posição inicial centralizada embaixo
         pygame.sprite.Sprite.__init__(self)
+        # O tamanho nativo do sprite é 300x300, diminuí para 50x50
         self.sprites = [
             pygame.transform.scale(pygame.image.load('media/Ship-middle.png'), (50, 50)),
             pygame.transform.scale(pygame.image.load('media/Ship-left.png'), (50, 50)),
@@ -58,6 +61,7 @@ class Nave(ElementoJogo):
         # TODO 1 (Alunos): Criar um projétil (pygame.Rect) saindo da ponta da nave
         # (ex: largura 4, altura 10) e adicioná-lo à lista self.tiros
         # =========================================================================
+        self.tiros.append(Projetil.Projetil(self.rect.x + 25, self.rect.y))
         pass
 
     def atualizar_tiros(self):
@@ -66,6 +70,8 @@ class Nave(ElementoJogo):
         # - Mover cada tiro da lista para cima (diminuir tiro.y)
         # - Remover da lista os tiros que saírem pelo topo da tela (tiro.bottom < 0)
         # =========================================================================
+        for tiro in self.tiros:
+            tiro.atualizar()
         pass
 
     def atualizar(self):
@@ -78,4 +84,4 @@ class Nave(ElementoJogo):
 
         # Desenha os tiros ativos na cor branca
         for tiro in self.tiros:
-            pygame.draw.rect(tela, (255, 255, 255), tiro)
+            tiro.desenhar(tela)
