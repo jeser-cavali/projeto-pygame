@@ -12,7 +12,7 @@ class Jogo:
         pygame.display.set_caption("Space Shooter - Projeto Base")
 
         self.clock = pygame.time.Clock()
-        self.fps = 30
+        self.fps = 60
         self.rodando = True
         self.pontos = 0
 
@@ -43,7 +43,6 @@ class Jogo:
         pass
 
     def atualizar(self):
-        # TODO objeto para spawnar os asteroides
         self.nave.atualizar()
         self.asteroide.mover()
         self.checar_colisoes()

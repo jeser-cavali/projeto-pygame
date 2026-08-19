@@ -4,7 +4,7 @@ import Projetil
 from ElementoJogo import ElementoJogo
 
 class Nave(ElementoJogo):
-    def __init__(self, largura_tela, altura_tela, velocidade=6, cor=(0, 255, 100)):
+    def __init__(self, largura_tela, altura_tela, velocidade=5, cor=(0, 255, 100)):
         # Inicializa a classe base com posição inicial centralizada embaixo
         pygame.sprite.Sprite.__init__(self)
         # O tamanho nativo do sprite é 300x300, diminuí para 50x50
@@ -72,6 +72,8 @@ class Nave(ElementoJogo):
         # =========================================================================
         for tiro in self.tiros:
             tiro.atualizar()
+            if not tiro.isVisible:
+                self.tiros.remove(tiro)
         pass
 
     def atualizar(self):
