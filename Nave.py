@@ -58,8 +58,10 @@ class Nave(ElementoJogo):
 
     def atirar(self):
         # Esta parte la terminará tu compañero en Projetil.py
+        self.tiros.append(Projetil.Projetil(self.rect.x + 20, self.rect.y))
         pass
 
+    # TODO Mecânica de tiros
     def atualizar_tiros(self):
         for tiro in self.tiros[:]:
             tiro.atualizar()

@@ -48,11 +48,19 @@ while rodando:
     for asteroide in asteroides:
         asteroide.mover()
 
-    # 3. Verificación de colisiones
+    #TODO Verificación de colisiones
     for asteroide in asteroides:
         if nave.rect.colliderect(asteroide.rect):
             print("¡Game Over! La nave fue destruida por un asteroide.")
             rodando = False
+        for tiro in nave.tiros:
+            if tiro.rect.colliderect(asteroide.rect):
+                nave.tiros.remove(tiro)
+                if asteroide.hits < 3:
+                    asteroide.hits += 1
+                if asteroide.hits == 3:
+                    asteroide.iniciar_status()
+                    pontos += 1000
 
     # 4. Dibujo en pantalla
     tela.fill((15, 15, 25))

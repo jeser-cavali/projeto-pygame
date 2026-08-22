@@ -16,7 +16,7 @@ class Projetil(ElementoJogo):
     def mover(self):
         self.rect.y -= self.velocidade
 
-        if self.rect.bottom < 0:
+        if self.rect.x < 0:
             self.isVisible = False
 
     def atualizar(self):
