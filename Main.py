@@ -5,6 +5,8 @@ from Estrela import Estrela
 
 # Configuración inicial
 pygame.init()
+pygame.font.init()  # Inicializar el módulo de fuentes
+
 LARGURA = 800
 ALTURA = 600
 tela = pygame.display.set_mode((LARGURA, ALTURA))
@@ -14,14 +16,16 @@ clock = pygame.time.Clock()
 FPS = 60
 rodando = True
 
+# Variable de puntos y fuente para la pantalla
+pontos = 0
+fonte = pygame.font.SysFont("Arial", 26, bold=True)
+
 # Creación de elementos
 nave = Nave(LARGURA, ALTURA)
 
-# Creación de asteroides
 num_asteroides = 5
 asteroides = [Asteroid(LARGURA, ALTURA) for _ in range(num_asteroides)]
 
-# Creación del fondo estrellado (50 estrellas)
 num_estrelas = 50
 estrelas = [Estrela(LARGURA, ALTURA) for _ in range(num_estrelas)]
 
@@ -51,16 +55,20 @@ while rodando:
             rodando = False
 
     # 4. Dibujo en pantalla
-    tela.fill((15, 15, 25))  # Fondo oscuro
+    tela.fill((15, 15, 25))
 
-    # Dibujar las estrellas PRIMERO (al fondo de todo)
+    # Estrellas de fondo
     for estrela in estrelas:
         estrela.desenhar(tela)
 
-    # Dibujar la nave y los asteroides encima
+    # Nave y Asteroides
     nave.desenhar(tela)
     for asteroide in asteroides:
         asteroide.desenhar(tela)
+
+    # CONTADOR DE PUNTOS (Esquina superior izquierda)
+    texto_pontos = fonte.render(f"PONTOS: {pontos}", True, (255, 255, 255))
+    tela.blit(texto_pontos, (20, 20))
 
     pygame.display.flip()
 
