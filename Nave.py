@@ -1,19 +1,9 @@
 import pygame
-
 import Projetil
 from ElementoJogo import ElementoJogo
 
 class Nave(ElementoJogo):
     def __init__(self, largura_tela, altura_tela, velocidade=5, cor=(0, 255, 100)):
-        # Inicializa a classe base com posição inicial centralizada embaixo
-        pygame.sprite.Sprite.__init__(self)
-        # O tamanho nativo do sprite é 300x300, diminuí para 50x50
-        self.sprites = [
-            pygame.transform.scale(pygame.image.load('media/Ship-middle.png'), (50, 50)),
-            pygame.transform.scale(pygame.image.load('media/Ship-left.png'), (50, 50)),
-            pygame.transform.scale(pygame.image.load('media/Ship-right.png'), (50, 50)),
-        ]
-        self.current_sprite = 0
         super().__init__(
             x=largura_tela // 2 - 20,
             y=altura_tela - 60,
@@ -25,10 +15,21 @@ class Nave(ElementoJogo):
         self.largura_tela = largura_tela
         self.altura_tela = altura_tela
         self.vel_x = 0
-        self.tiros = []  # Lista que guardará os tiros ativos
+        self.tiros = []
+
+        # Intenta cargar imágenes si existen
+        try:
+            self.sprites = [
+                pygame.transform.scale(pygame.image.load('media/Ship-middle.png'), (40, 40)),
+                pygame.transform.scale(pygame.image.load('media/Ship-left.png'), (40, 40)),
+                pygame.transform.scale(pygame.image.load('media/Ship-right.png'), (40, 40)),
+            ]
+        except Exception:
+            self.sprites = []
+
+        self.current_sprite = 0
 
     def processar_evento(self, evento):
-        """Controla os eventos de teclado para movimentação e disparo."""
         if evento.type == pygame.KEYDOWN:
             if evento.key in (pygame.K_LEFT, pygame.K_a):
                 self.current_sprite = 1
@@ -48,7 +49,6 @@ class Nave(ElementoJogo):
                 self.vel_x = 0
 
     def mover(self):
-        """Aplica o deslocamento horizontal e trava nas bordas da tela."""
         self.rect.x += self.vel_x
 
         if self.rect.left < 0:
@@ -57,33 +57,28 @@ class Nave(ElementoJogo):
             self.rect.right = self.largura_tela
 
     def atirar(self):
-        # =========================================================================
-        # TODO 1 (Alunos): Criar um projétil (pygame.Rect) saindo da ponta da nave
-        # (ex: largura 4, altura 10) e adicioná-lo à lista self.tiros
-        # =========================================================================
-        self.tiros.append(Projetil.Projetil(self.rect.x + 25, self.rect.y))
+        # Esta parte la terminará tu compañero en Projetil.py
         pass
 
     def atualizar_tiros(self):
-        # =========================================================================
-        # TODO 2 (Alunos):
-        # - Mover cada tiro da lista para cima (diminuir tiro.y)
-        # - Remover da lista os tiros que saírem pelo topo da tela (tiro.bottom < 0)
-        # =========================================================================
-        for tiro in self.tiros:
+        for tiro in self.tiros[:]:
             tiro.atualizar()
             if not tiro.isVisible:
                 self.tiros.remove(tiro)
-        pass
 
     def atualizar(self):
         self.mover()
         self.atualizar_tiros()
 
     def desenhar(self, tela):
-        # Polimorfismo: desenha a nave em formato de triângulo
-        tela.blit(self.sprites[self.current_sprite], (self.rect.x, self.rect.y))
+        if self.sprites:
+            tela.blit(self.sprites[self.current_sprite], (self.rect.x, self.rect.y))
+        else:
+            # Dibuja un triángulo verde si no hay imágenes cargadas
+            ponto_topo = (self.rect.centerx, self.rect.top)
+            ponto_esq = (self.rect.left, self.rect.bottom)
+            ponto_dir = (self.rect.right, self.rect.bottom)
+            pygame.draw.polygon(tela, self.cor, [ponto_topo, ponto_esq, ponto_dir])
 
-        # Desenha os tiros ativos na cor branca
         for tiro in self.tiros:
             tiro.desenhar(tela)

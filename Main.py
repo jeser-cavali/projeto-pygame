@@ -1,68 +1,67 @@
 import pygame
 from Nave import Nave
 from Asteroid import Asteroid
+from Estrela import Estrela
 
+# Configuración inicial
+pygame.init()
+LARGURA = 800
+ALTURA = 600
+tela = pygame.display.set_mode((LARGURA, ALTURA))
+pygame.display.set_caption("Space Shooter")
 
-class Jogo:
-    def __init__(self, largura=800, altura=600):
-        pygame.init()
-        self.largura = largura
-        self.altura = altura
-        self.tela = pygame.display.set_mode((self.largura, self.altura))
-        pygame.display.set_caption("Space Shooter - Projeto Base")
+clock = pygame.time.Clock()
+FPS = 60
+rodando = True
 
-        self.clock = pygame.time.Clock()
-        self.fps = 60
-        self.rodando = True
-        self.pontos = 0
+# Creación de elementos
+nave = Nave(LARGURA, ALTURA)
 
-        # Elementos do jogo
-        self.nave = Nave(self.largura, self.altura)
-        self.asteroide = Asteroid(self.largura, self.altura)
+# Creación de asteroides
+num_asteroides = 5
+asteroides = [Asteroid(LARGURA, ALTURA) for _ in range(num_asteroides)]
 
-    def processar_eventos(self):
-        for evento in pygame.event.get():
-            if evento.type == pygame.QUIT:
-                self.rodando = False
-            self.nave.processar_evento(evento)
+# Creación del fondo estrellado (50 estrellas)
+num_estrelas = 50
+estrelas = [Estrela(LARGURA, ALTURA) for _ in range(num_estrelas)]
 
-    def checar_colisoes(self):
-        # =========================================================================
-        # TODO 4 (Alunos):
-        # A) Tiro vs Asteroide:
-        #    - Percorrer self.nave.tiros
-        #    - Se tiro.colliderect(self.asteroide.rect):
-        #        1. Remover o tiro da lista
-        #        2. Reiniciar o asteroide (self.asteroide.iniciar_status())
-        #        3. Incrementar self.pontos em 1
-        #
-        # B) Asteroide vs Nave:
-        #    - Se self.nave.rect.colliderect(self.asteroide.rect):
-        #        - Finalizar a partida (self.rodando = False ou reiniciar)
-        # =========================================================================
-        pass
+# Bucle principal del juego
+while rodando:
+    clock.tick(FPS)
 
-    def atualizar(self):
-        self.nave.atualizar()
-        self.asteroide.mover()
-        self.checar_colisoes()
+    # 1. Eventos
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT:
+            rodando = False
+        nave.processar_evento(evento)
 
-    def desenhar(self):
-        self.tela.fill((15, 15, 25))
-        self.nave.desenhar(self.tela)
-        self.asteroide.desenhar(self.tela)
-        pygame.display.flip()
+    # 2. Actualización de posiciones
+    nave.atualizar()
+    
+    for estrela in estrelas:
+        estrela.mover()
 
-    def executar(self):
-        while self.rodando:
-            self.clock.tick(self.fps)
-            self.processar_eventos()
-            self.atualizar()
-            self.desenhar()
+    for asteroide in asteroides:
+        asteroide.mover()
 
-        pygame.quit()
+    # 3. Verificación de colisiones
+    for asteroide in asteroides:
+        if nave.rect.colliderect(asteroide.rect):
+            print("¡Game Over! La nave fue destruida por un asteroide.")
+            rodando = False
 
+    # 4. Dibujo en pantalla
+    tela.fill((15, 15, 25))  # Fondo oscuro
 
-if __name__ == "__main__":
-    jogo = Jogo()
-    jogo.executar()
+    # Dibujar las estrellas PRIMERO (al fondo de todo)
+    for estrela in estrelas:
+        estrela.desenhar(tela)
+
+    # Dibujar la nave y los asteroides encima
+    nave.desenhar(tela)
+    for asteroide in asteroides:
+        asteroide.desenhar(tela)
+
+    pygame.display.flip()
+
+pygame.quit()

@@ -1,33 +1,27 @@
-import pygame.draw
-
+import pygame
 from ElementoJogo import ElementoJogo
 
-
 class Projetil(ElementoJogo):
-    def __init__(self, x, y, velocidade=15):
+    def __init__(self, x, y, velocidade=12):
         super().__init__(
-            x = x,
-            y = y,
-            largura = 0,
-            altura = 0,
-            velocidade = velocidade
+            x=x - 5,
+            y=y,
+            largura=10,
+            altura=10,
+            velocidade=velocidade
         )
-        self.isVisible = 1
-        self.radius = 7
+        self.isVisible = True
+        self.raio = 5
 
     def mover(self):
         self.rect.y -= self.velocidade
 
-        if self.rect.y < 0:
-            self.isVisible = 0
+        if self.rect.bottom < 0:
+            self.isVisible = False
 
     def atualizar(self):
         self.mover()
-        if self.radius > 2:
-            self.radius -= 1
 
     def desenhar(self, tela):
-        if self.isVisible == 1:
-            pygame.draw.circle(tela, (255, 255, 255), (self.rect.x, self.rect.y), self.radius)
-
-
+        if self.isVisible:
+            pygame.draw.circle(tela, (255, 255, 255), self.rect.center, self.raio)

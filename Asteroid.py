@@ -2,7 +2,6 @@ import random
 import pygame
 from ElementoJogo import ElementoJogo
 
-
 class Asteroid(ElementoJogo):
     def __init__(self, largura_tela, altura_tela, velocidade=5, cor=(200, 50, 50)):
         self.largura_tela = largura_tela
@@ -20,21 +19,23 @@ class Asteroid(ElementoJogo):
         self.iniciar_status()
 
     def iniciar_status(self):
-        # =========================================================================
-        # TODO 3 (Alunos):
-        # - Sortear uma posição X aleatória dentro dos limites da tela
-        # - Posicionar o Y acima da tela (ex: entre -150 e -50)
-        # - Sortear uma velocidade de queda aleatória (ex: entre 3 e 7)
-        # =========================================================================
-        pass
+        # 1. Posición X aleatoria dentro de la pantalla
+        limite_x = max(0, self.largura_tela - self.rect.width)
+        self.rect.x = random.randint(0, limite_x)
+
+        # 2. Posición Y aleatoria arriba de la pantalla (fuera de vista)
+        self.rect.y = random.randint(-150, -50)
+
+        # 3. Velocidad aleatoria de caída
+        self.velocidade = random.randint(3, 7)
 
     def mover(self):
         self.rect.y += self.velocidade
 
-        # Reinicia no topo caso passe reto pelo fundo da tela
+        # Reinicia arriba si pasa el borde inferior de la pantalla
         if self.rect.top > self.altura_tela:
             self.iniciar_status()
 
     def desenhar(self, tela):
-        # Polimorfismo: desenha o asteroide como círculo
+        # Dibuja el asteroide como un círculo rojo
         pygame.draw.circle(tela, self.cor, self.rect.center, self.raio)
