@@ -45,12 +45,16 @@ while rodando:
     
     for estrela in estrelas:
         estrela.mover()
+        estrela.modularVelocidade(nave.speeding)
 
     for asteroide in asteroides:
         asteroide.mover()
 
     #TODO Verificación de colisiones
     for asteroide in asteroides:
+
+        asteroide.modularVelocidade(nave.speeding)
+
         if nave.rect.colliderect(asteroide.rect) and not nave.imortal:
             nave.hits += 1
             nave.turn_imortal()
@@ -58,14 +62,19 @@ while rodando:
             if nave.hits == 3 :
                 print("¡Game Over! La nave fue destruida por un asteroide.")
                 rodando = False
+
         for tiro in nave.tiros:
+            tiro.modularVelocidade(nave.speeding)
             if tiro.rect.colliderect(asteroide.rect):
                 nave.tiros.remove(tiro)
                 if asteroide.hits < 3:
                     asteroide.hits += 1
                 if asteroide.hits == 3 :
                     asteroide.iniciar_status()
-                    pontos += 1000
+                    if nave.speeding:
+                        pontos += 3000
+                    else:
+                         pontos += 1000
 
     # 4. Dibujo en pantalla
     tela.fill((15, 15, 25))

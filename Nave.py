@@ -19,6 +19,7 @@ class Nave(ElementoJogo):
         self.tiros = []
 
         self.hits = 0
+        self.speeding = False
 
         self.imortal = False
         self.imortal_trigger = 0
@@ -90,14 +91,15 @@ class Nave(ElementoJogo):
         self.sprite_frame = 0
         self.intervalo_frames = pygame.time.get_ticks()
 
-        try:
-            self.sprites = [
-                pygame.transform.scale(pygame.image.load('media/Ship-middle.png').convert_alpha(), (60, 60)),
-                pygame.transform.scale(pygame.image.load('media/Ship-left.png').convert_alpha(), (60, 60)),
-                pygame.transform.scale(pygame.image.load('media/Ship-right.png').convert_alpha(), (60, 60)),
-            ]
-        except Exception:
-            self.sprites = []
+
+        #try:
+        #    self.sprites = [
+        #        pygame.transform.scale(pygame.image.load('media/Ship-middle.png').convert_alpha(), (60, 60)),
+        #        pygame.transform.scale(pygame.image.load('media/Ship-left.png').convert_alpha(), (60, 60)),
+        #        pygame.transform.scale(pygame.image.load('media/Ship-right.png').convert_alpha(), (60, 60)),
+        #    ]
+        #except Exception:
+        #    self.sprites = []
 
         self.current_sprite = 0
 
@@ -125,6 +127,9 @@ class Nave(ElementoJogo):
                 self.vel_x = self.velocidade
             elif evento.key == pygame.K_SPACE:
                 self.atirar()
+            elif evento.key == pygame.K_UP:
+                self.speeding = True
+                self.velocidade = 10
 
         elif evento.type == pygame.KEYUP:
             if evento.key in (pygame.K_LEFT, pygame.K_a) and self.vel_x < 0:
@@ -133,6 +138,9 @@ class Nave(ElementoJogo):
             elif evento.key in (pygame.K_RIGHT, pygame.K_d) and self.vel_x > 0:
                 self.current_sprite = 0
                 self.vel_x = 0
+            elif evento.key in (pygame.K_UP, pygame.K_LEFT):
+                self.speeding = False
+                self.velocidade = 5
 
     def mover(self):
         self.rect.x += self.vel_x
@@ -144,7 +152,7 @@ class Nave(ElementoJogo):
 
     def atirar(self):
         # Esta parte la terminará tu compañero en Projetil.py
-        self.tiros.append(Projetil.Projetil(self.rect.x + 32, self.rect.y))
+        self.tiros.append(Projetil.Projetil(self.rect.x + 16, self.rect.y))
         pass
 
     # TODO Mecânica de tiros
@@ -192,7 +200,7 @@ class Nave(ElementoJogo):
         self.flash()
 
     def desenhar(self, tela):
-        if self.sprites and self.visible == True:
+        if self.visible == True:
             tela.blit(self.complex_sprites[self.current_sprite][self.hits][self.sprite_frame], (self.rect.x - 16, self.rect.y))
         #else:
             # Dibuja un triángulo verde si no hay imágenes cargadas

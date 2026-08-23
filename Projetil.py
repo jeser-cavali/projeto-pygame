@@ -13,6 +13,12 @@ class Projetil(ElementoJogo):
         self.isVisible = True
         self.raio = 10
 
+    def modularVelocidade(self, condition: bool):
+        if condition:
+            self.velocidade = 6
+        else:
+            self.velocidade = 12
+
     def mover(self):
         self.rect.y -= self.velocidade
 

@@ -16,6 +16,12 @@ class Estrela:
         # Velocidad constante rápida
         self.velocidade = 8
 
+    def modularVelocidade(self, condition: bool):
+        if condition:
+            self.velocidade = 16
+        else:
+            self.velocidade = 8
+
     def mover(self):
         self.y += self.velocidade
 

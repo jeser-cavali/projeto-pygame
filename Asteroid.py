@@ -23,7 +23,13 @@ class Asteroid(ElementoJogo):
             (200, 0, 0),
             (200, 0, 0)
         ]
+        self.sprites = [
+            pygame.transform.scale(pygame.image.load('./media/Sprite-0002.png').convert_alpha().subsurface((0, 0, 32, 32)), (64, 64)),
+            pygame.transform.scale(pygame.image.load('./media/Sprite-0002.png').convert_alpha().subsurface((32, 0, 32, 32)),(64, 64)),
+            pygame.transform.scale(pygame.image.load('./media/Sprite-0002.png').convert_alpha().subsurface((64, 0, 32, 32)),(64, 64)),
+        ]
         self.hits = 0
+        self.random_angle = random.randint(0, 359)
 
     def iniciar_status(self):
         # 1. Posición X aleatoria dentro de la pantalla
@@ -38,6 +44,13 @@ class Asteroid(ElementoJogo):
 
         self.hits = 0
 
+    def modularVelocidade(self, condition: bool):
+        if condition:
+            self.velocidade = 10
+        else:
+            self.velocidade = 5
+
+
     def mover(self):
         self.rect.y += self.velocidade
 
@@ -48,4 +61,5 @@ class Asteroid(ElementoJogo):
     def desenhar(self, tela):
         # Dibuja el asteroide como un círculo rojo
         if self.rect.y <= self.altura_tela:
-            pygame.draw.circle(tela, self.cores[self.hits], self.rect.center, self.raio)
+            tela.blit(pygame.transform.rotate(self.sprites[self.hits], self.random_angle), (self.rect.x - 32, self.rect.y - 32))
+            #pygame.draw.circle(tela, self.cores[self.hits], self.rect.center, self.raio)
