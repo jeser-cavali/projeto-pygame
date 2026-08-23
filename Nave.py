@@ -7,7 +7,7 @@ class Nave(ElementoJogo):
     def __init__(self, largura_tela, altura_tela, velocidade=5, cor=(0, 255, 100)):
         super().__init__(
             x=largura_tela // 2 - 20,
-            y=altura_tela - 60,
+            y=altura_tela - 80,
             largura=40,
             altura=40,
             cor=cor,
@@ -83,6 +83,7 @@ class Nave(ElementoJogo):
             ]
         ]
         self.sprite_frame = 0
+        self.intervalo_frames = pygame.time.get_ticks()
 
         try:
             self.sprites = [
@@ -107,7 +108,7 @@ class Nave(ElementoJogo):
         for i in range(len(grid_frames)):
             for x in range(0, 96, 32):
                 for y in range(0, 96, 32):
-                    self.complex_sprites[x//32][y//32][i] = grid_frames[i].subsurface((x, y, 32, 32))
+                    self.complex_sprites[x//32][y//32][i] = pygame.transform.scale(grid_frames[i].subsurface((x, y, 32, 32)), (64,64))
 
     def processar_evento(self, evento):
         if evento.type == pygame.KEYDOWN:
@@ -138,7 +139,7 @@ class Nave(ElementoJogo):
 
     def atirar(self):
         # Esta parte la terminará tu compañero en Projetil.py
-        self.tiros.append(Projetil.Projetil(self.rect.x + 20, self.rect.y))
+        self.tiros.append(Projetil.Projetil(self.rect.x + 32, self.rect.y))
         pass
 
     # TODO Mecânica de tiros
@@ -149,10 +150,12 @@ class Nave(ElementoJogo):
                 self.tiros.remove(tiro)
 
     def atualizar_frame(self):
-        if self.sprite_frame != 3:
-            self.sprite_frame += 1
-        else:
-            self.sprite_frame = 0
+        if (pygame.time.get_ticks() - self.intervalo_frames) >= 200:
+            self.intervalo_frames = pygame.time.get_ticks()
+            if self.sprite_frame != 3:
+                self.sprite_frame += 1
+            else:
+                self.sprite_frame = 0
 
     def atualizar(self):
         self.mover()
