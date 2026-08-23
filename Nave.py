@@ -1,4 +1,5 @@
 import pygame
+from PIL import Image
 import Projetil
 from ElementoJogo import ElementoJogo
 
@@ -17,17 +18,96 @@ class Nave(ElementoJogo):
         self.vel_x = 0
         self.tiros = []
 
-        # Intenta cargar imágenes si existen
+        self.hits = 0
+
+        self.complex_sprites = [
+            [
+                [
+                    [],
+                    [],
+                    [],
+                    []
+                ],
+                [
+                    [],
+                    [],
+                    [],
+                    []
+                ],
+                [
+                    [],
+                    [],
+                    [],
+                    []
+                ]
+            ],
+            [
+                [
+                    [],
+                    [],
+                    [],
+                    []
+                ],
+                [
+                    [],
+                    [],
+                    [],
+                    []
+                ],
+                [
+                    [],
+                    [],
+                    [],
+                    []
+                ]
+            ],
+            [
+                [
+                    [],
+                    [],
+                    [],
+                    []
+                ],
+                [
+                    [],
+                    [],
+                    [],
+                    []
+                ],
+                [
+                    [],
+                    [],
+                    [],
+                    []
+                ]
+            ]
+        ]
+        self.sprite_frame = 0
+
         try:
             self.sprites = [
-                pygame.transform.scale(pygame.image.load('media/Ship-middle.png'), (40, 40)),
-                pygame.transform.scale(pygame.image.load('media/Ship-left.png'), (40, 40)),
-                pygame.transform.scale(pygame.image.load('media/Ship-right.png'), (40, 40)),
+                pygame.transform.scale(pygame.image.load('media/Ship-middle.png').convert_alpha(), (60, 60)),
+                pygame.transform.scale(pygame.image.load('media/Ship-left.png').convert_alpha(), (60, 60)),
+                pygame.transform.scale(pygame.image.load('media/Ship-right.png').convert_alpha(), (60, 60)),
             ]
         except Exception:
             self.sprites = []
 
         self.current_sprite = 0
+
+    def carregar_sprites(self):
+        gif = Image.open('./media/Sprite-0001.gif')
+
+        grid_frames = []
+        for frame in range(gif.n_frames):
+            gif.seek(frame)
+            quadro_atual = gif.convert('RGBA')
+            quadro_em_bytes = quadro_atual.tobytes()
+            grid_frames.append(pygame.image.frombytes(quadro_em_bytes, quadro_atual.size, 'RGBA').convert_alpha())
+        for i in range(len(grid_frames)):
+            for x in range(0, 96, 32):
+                for y in range(0, 96, 32):
+                    self.complex_sprites[x//32][y//32][i] = grid_frames[i].subsurface((x, y, 32, 32))
 
     def processar_evento(self, evento):
         if evento.type == pygame.KEYDOWN:
@@ -68,13 +148,20 @@ class Nave(ElementoJogo):
             if not tiro.isVisible:
                 self.tiros.remove(tiro)
 
+    def atualizar_frame(self):
+        if self.sprite_frame != 3:
+            self.sprite_frame += 1
+        else:
+            self.sprite_frame = 0
+
     def atualizar(self):
         self.mover()
         self.atualizar_tiros()
+        self.atualizar_frame()
 
     def desenhar(self, tela):
         if self.sprites:
-            tela.blit(self.sprites[self.current_sprite], (self.rect.x, self.rect.y))
+            tela.blit(self.complex_sprites[self.current_sprite][self.hits][self.sprite_frame], (self.rect.x, self.rect.y))
         else:
             # Dibuja un triángulo verde si no hay imágenes cargadas
             ponto_topo = (self.rect.centerx, self.rect.top)

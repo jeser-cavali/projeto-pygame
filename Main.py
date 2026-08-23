@@ -22,6 +22,7 @@ fonte = pygame.font.SysFont("Arial", 26, bold=True)
 
 # Creación de elementos
 nave = Nave(LARGURA, ALTURA)
+nave.carregar_sprites()
 
 num_asteroides = 5
 asteroides = [Asteroid(LARGURA, ALTURA) for _ in range(num_asteroides)]
@@ -51,14 +52,17 @@ while rodando:
     #TODO Verificación de colisiones
     for asteroide in asteroides:
         if nave.rect.colliderect(asteroide.rect):
-            print("¡Game Over! La nave fue destruida por un asteroide.")
-            rodando = False
+            nave.hits += 1
+            asteroide.iniciar_status()
+            if nave.hits == 3 :
+                print("¡Game Over! La nave fue destruida por un asteroide.")
+                rodando = False
         for tiro in nave.tiros:
             if tiro.rect.colliderect(asteroide.rect):
                 nave.tiros.remove(tiro)
                 if asteroide.hits < 3:
                     asteroide.hits += 1
-                if asteroide.hits == 3:
+                if asteroide.hits == 3 :
                     asteroide.iniciar_status()
                     pontos += 1000
 
@@ -70,7 +74,9 @@ while rodando:
         estrela.desenhar(tela)
 
     # Nave y Asteroides
-    nave.desenhar(tela)
+    if rodando:
+        nave.desenhar(tela)
+
     for asteroide in asteroides:
         asteroide.desenhar(tela)
 

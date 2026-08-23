@@ -11,7 +11,7 @@ class Projetil(ElementoJogo):
             velocidade=velocidade
         )
         self.isVisible = True
-        self.raio = 5
+        self.raio = 10
 
     def mover(self):
         self.rect.y -= self.velocidade
@@ -20,6 +20,8 @@ class Projetil(ElementoJogo):
             self.isVisible = False
 
     def atualizar(self):
+        if self.raio > 5:
+            self.raio -= 1
         self.mover()
 
     def desenhar(self, tela):
