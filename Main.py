@@ -51,8 +51,9 @@ while rodando:
 
     #TODO Verificación de colisiones
     for asteroide in asteroides:
-        if nave.rect.colliderect(asteroide.rect):
+        if nave.rect.colliderect(asteroide.rect) and not nave.imortal:
             nave.hits += 1
+            nave.turn_imortal()
             asteroide.iniciar_status()
             if nave.hits == 3 :
                 print("¡Game Over! La nave fue destruida por un asteroide.")

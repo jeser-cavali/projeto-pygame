@@ -20,6 +20,11 @@ class Nave(ElementoJogo):
 
         self.hits = 0
 
+        self.imortal = False
+        self.imortal_trigger = 0
+        self.visible = True
+        self.last_transition = 0
+
         self.complex_sprites = [
             [
                 [
@@ -150,27 +155,51 @@ class Nave(ElementoJogo):
                 self.tiros.remove(tiro)
 
     def atualizar_frame(self):
-        if (pygame.time.get_ticks() - self.intervalo_frames) >= 200:
-            self.intervalo_frames = pygame.time.get_ticks()
-            if self.sprite_frame != 3:
-                self.sprite_frame += 1
+        if not self.imortal:
+            if (pygame.time.get_ticks() - self.intervalo_frames) >= 200:
+                self.intervalo_frames = pygame.time.get_ticks()
+                if self.sprite_frame != 3:
+                    self.sprite_frame += 1
+                else:
+                    self.sprite_frame = 0
+
+    def turn_imortal(self):
+        self.imortal = True
+        self.imortal_trigger = pygame.time.get_ticks()
+        self.switch_visibility()
+        self.last_transition = pygame.time.get_ticks()
+
+    def switch_visibility(self):
+        if self.visible:
+            self.visible = False
+        else:
+            self.visible = True
+
+    def flash(self):
+        if self.imortal:
+            if (pygame.time.get_ticks() - self.imortal_trigger) >= 700:
+                self.imortal = False
+                self.visible = True
             else:
-                self.sprite_frame = 0
+                if (pygame.time.get_ticks() - self.last_transition) >= 100:
+                    self.switch_visibility()
+                    self.last_transition = pygame.time.get_ticks()
 
     def atualizar(self):
         self.mover()
         self.atualizar_tiros()
         self.atualizar_frame()
+        self.flash()
 
     def desenhar(self, tela):
-        if self.sprites:
-            tela.blit(self.complex_sprites[self.current_sprite][self.hits][self.sprite_frame], (self.rect.x, self.rect.y))
-        else:
+        if self.sprites and self.visible == True:
+            tela.blit(self.complex_sprites[self.current_sprite][self.hits][self.sprite_frame], (self.rect.x - 16, self.rect.y))
+        #else:
             # Dibuja un triángulo verde si no hay imágenes cargadas
-            ponto_topo = (self.rect.centerx, self.rect.top)
-            ponto_esq = (self.rect.left, self.rect.bottom)
-            ponto_dir = (self.rect.right, self.rect.bottom)
-            pygame.draw.polygon(tela, self.cor, [ponto_topo, ponto_esq, ponto_dir])
+            #ponto_topo = (self.rect.centerx, self.rect.top)
+            #ponto_esq = (self.rect.left, self.rect.bottom)
+            #ponto_dir = (self.rect.right, self.rect.bottom)
+            #pygame.draw.polygon(tela, self.cor, [ponto_topo, ponto_esq, ponto_dir])
 
         for tiro in self.tiros:
             tiro.desenhar(tela)
